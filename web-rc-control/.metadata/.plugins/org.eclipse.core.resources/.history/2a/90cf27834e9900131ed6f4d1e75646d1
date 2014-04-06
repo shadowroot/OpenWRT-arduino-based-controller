@@ -1,0 +1,203 @@
+/*
+ * libserial.c
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+#include "libserial.h"
+
+/**
+ * Initial setup for serial tty.
+ * @param fd
+ * @param speed
+ * @param parity
+ * @return
+ */
+int serial_setup(int fd,int speed,int parity){
+
+	 struct termios tty;
+	memset (&tty, 0, sizeof tty);
+	if (tcgetattr (fd, &tty) != 0)
+	{
+			error_message ("error %d from tcgetattr");
+			return -1;
+	}
+
+	cfsetospeed (&tty, speed);
+	cfsetispeed (&tty, speed);
+
+	tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
+	// disable IGNBRK for mismatched speed tests; otherwise receive break
+	// as \000 chars
+	tty.c_iflag &= ~IGNBRK;         // ignore break signal
+	tty.c_lflag = 0;                // no signaling chars, no echo,
+									// no canonical processing
+	tty.c_oflag = 0;                // no remapping, no delays
+	tty.c_cc[VMIN]  = 0;            // read doesn't block
+	tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+
+	tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
+
+	tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls,
+									// enable reading
+	tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
+	tty.c_cflag |= parity;
+	tty.c_cflag &= ~CSTOPB;
+	tty.c_cflag &= ~CRTSCTS;
+
+	if (tcsetattr (fd, TCSANOW, &tty) != 0)
+	{
+			error_message ("error %d from tcsetattr");
+			return -1;
+	}
+	return 0;
+}
+
+void
+set_blocking (int fd, int should_block)
+{
+		struct termios tty;
+		memset (&tty, 0, sizeof tty);
+		if (tcgetattr (fd, &tty) != 0)
+		{
+				error_message ("error %d from tcgetattr");
+				return;
+		}
+
+		tty.c_cc[VMIN]  = should_block ? 1 : 0;
+		tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+
+		if (tcsetattr (fd, TCSANOW, &tty) != 0)
+				error_message ("error %d setting term attributes");
+}
+
+/**
+ * Initialization of serial
+ * @return
+ */
+
+int init_serial(){
+	int pid = 0;
+	pid = fork();
+	/*
+	 * For serial communication waiting for responses
+	 */
+	if(!pid){
+		SERIAL = open("/dev/ttyS0",O_RDWR | O_NOCTTY | O_SYNC);
+		if(SERIAL < 0){
+			error_message ("error %d init tern failed");
+		}
+		serial_setup(SERIAL,B9600,0);
+		set_blocking(SERIAL,0);
+
+
+
+	}
+	return 0;
+}
+
+/**
+ *
+ * @param data
+ * @return
+ */
+int json_parse_serial(const char * data){
+
+
+
+	return 0;
+}
+/**
+ * Resizing json string
+ * @param str
+ * @param oldsize
+ * @return
+ */
+int __resize_json(char ** str,int oldsize){
+	int newsize = oldsize * 2;
+	char * tmpstr = NULL;
+	tmpstr = (char*) malloc(newsize);
+	memcpy(tmpstr,*str,oldsize);
+	free(*str);
+	*str = tmpstr;
+	return newsize;
+}
+
+
+/**
+ * Parsing SERIAL responses to json delimiter ' '
+ * Using serial buffer
+ * Example:
+ * 	MOVE OK			{"MOVE":"OK"}
+ * 	OUT_* FAIL		{"OUT_*":"FAIL"}
+ * 	IN_0 255		{"IN_0" :"255"}
+ * @return
+ */
+char * json_parse_serial( ){
+	char * pstrJson = NULL;
+	int istr = 0,i = 0;
+	int istr_size = SERIAL_BUFFER_READ * 2;
+	char seeking_value = FALSE;
+	pstrJson = (char *) malloc(istr_size);
+
+	for(i = 0 ; i < SERIAL_BUFFER_READ ; i++){
+		if(istr >= istr_size){
+			istr_size = __resize_json(&pstrJson)
+		}
+		if(SERIAL_BUFFER[i] == ' ' || SERIAL_BUFFER[i] == '\t'){
+			if(!seeking_value){
+				seeking_value = TRUE;
+			}
+			else{
+				continue;
+			}
+		}
+		else if(SERIAL_BUFFER[i] == '\n'){
+
+		}
+		else{
+			/*
+			 * Just skipping in case \r\n
+			 */
+
+			if(SERIAL_BUFFER[i] != '\r'){
+
+				istr++;
+			}
+		}
+	}
+
+	return pstrJson;
+}
+
+/**
+ * Reading string
+ * @param buffer
+ * @param size
+ * @return
+ */
+int serial_read(){
+	SERIAL_BUFFER_READ = read(SERIAL,SERIAL_BUFFER,sizeof(SERIAL_BUFFER));
+	/*
+	 * process incomming data
+	 */
+	// TODO parsing read
+
+	return 0;
+}
+/**
+ * Writing string
+ * @param buffer
+ * @return
+ */
+int serial_write(){
+	// TODO parsing write
+
+	write(SERIAL,SERIAL_BUFFER,sizeof(SERIAL_BUFFER));
+	/*
+	 * send data over
+	 */
+
+	return 0;
+}

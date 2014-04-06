@@ -1,0 +1,14 @@
+/*
+ * liblogin.h
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+#ifndef LIBLOGIN_H_
+#define LIBLOGIN_H_
+
+FILE * USERSFILE;
+
+
+#endif /* LIBLOGIN_H_ */

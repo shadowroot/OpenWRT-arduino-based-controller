@@ -1,0 +1,38 @@
+/*
+ * webcontrol.h
+ *
+ *  Created on: 5. 2. 2014
+ *      Author: jonny
+ */
+
+#include <stdio.h>
+#include <time.h>
+#include <termios.h>
+#include <unistd.h>
+#include "utils.h"
+#include "liblogin.h"
+
+#ifndef WEBCONTROL_H_
+#define WEBCONTROL_H_
+
+
+#define PACKET_SIZE 1024
+
+
+
+/**
+ * GLOBAL VARIABLES
+ * log_msg buffer for message log
+ * SERIAL_BUFFER buffer for serial communication
+ */
+
+char log_msg[100];
+char SERIAL_BUFFER[9600];
+/**
+ *
+ * @param msg
+ * @param err
+ */
+
+
+#endif /* WEBCONTROL_H_ */

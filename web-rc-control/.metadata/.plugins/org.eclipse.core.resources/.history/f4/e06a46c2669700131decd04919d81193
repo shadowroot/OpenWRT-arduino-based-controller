@@ -1,0 +1,112 @@
+/*
+ * liblogin.c
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+#include "liblogin.h"
+
+int __setUserFile(const char * filename){
+	pUSERSFILE = fopen(filename,"a");
+	if(!pUSERSFILE){
+		error_message("Users file not found or error with openning");
+		return -1;
+	}
+	fseek(pUSERSFILE,0L,SEEK_END);
+	lUsersfileSize = ftell(pUSERSFILE);
+	fseek(pUSERSFILE,0L,SEEK_SET);
+	return 0;
+}
+/**
+ *
+ * @return 0 OK
+ * -1 ERROR
+ */
+int __loadUserFile(){
+	long read_size = 0;
+	szUsersFileStream = malloc(lUsersfileSize);
+	read_size = fread(szUsersFileStream,1,lUsersfileSize,pUSERSFILE);
+	if(read_size < lUsersfileSize){
+		error_message("Error reading users file.");
+		return -1;
+	}
+
+	return 0;
+}
+/**
+ *
+ * @return 0 - OK
+ * -1 ERROR
+ */
+int __parseUserFile(){
+
+
+
+
+	return 0;
+}
+
+/**
+ * Adding user - same structure as /etc/shadow
+ * username:crypted(password)\n
+ * @param username plain
+ * @param password crypted
+ */
+int __addUser(const char * username, const char * password){
+
+	return 0;
+}
+/**
+ * Deleting users via username
+ * @param username plain
+ */
+int __delUser(const char * username){
+
+	return 0;
+}
+
+/**
+ * uses password from file as a salt and then compare result hashes
+ * @param username plain
+ * @param password plain
+ * @return 0 when will be sucessfull
+ */
+int __login(const char * username,const char * password){
+
+	return 0;
+}
+/**
+ *
+ * @param username
+ * @return password string
+ */
+const char * __getUserPassword(const char * username){
+	char * pstr = NULL;
+
+
+
+	return pstr;
+}
+
+/**
+ *
+ * @param cookie
+ * @param SESSIONID
+ * @return
+ */
+int __isLogged(const char * cookie,int * SESSIONID){
+	char * param, * value;
+	while(!parseCOOKIE(&cookie,&param,&value)){
+		if(strcmp(param,"SESSION")){
+			*SESSIONID = atoi(value);
+		}
+	}
+	if(*SESSIONID < 0){
+		if(login()){
+			return 1;
+		}
+	}
+	return 0;
+}
+

@@ -1,0 +1,20 @@
+/*
+ * libserial.h
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+#include <stdio.h>
+#include <time.h>
+#include <termios.h>
+#include <unistd.h>
+#include "utils.h"
+#include "libjson.h"
+
+#ifndef LIBSERIAL_H_
+#define LIBSERIAL_H_
+
+char SERIAL_BUFFER[9600];
+
+#endif /* LIBSERIAL_H_ */

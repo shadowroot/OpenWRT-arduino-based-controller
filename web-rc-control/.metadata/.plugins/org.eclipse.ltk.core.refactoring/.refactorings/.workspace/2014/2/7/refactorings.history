@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;controller/rccarcontrol.h&apos;" deleteContents="false" description="Delete resource &apos;controller/rccarcontrol.h&apos;" element1="/controller/rccarcontrol.h" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1392501501505"/>&#x0A;<refactoring comment="Delete resource &apos;controller/rccarcontrol.c&apos;" deleteContents="false" description="Delete resource &apos;controller/rccarcontrol.c&apos;" element1="/controller/rccarcontrol.c" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1392501508292"/>
+</session>

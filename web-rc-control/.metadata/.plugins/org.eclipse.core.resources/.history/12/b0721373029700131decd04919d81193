@@ -1,0 +1,22 @@
+/*
+ * liblogin.h
+
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include "utils.h"
+
+
+#ifndef LIBLOGIN_H_
+#define LIBLOGIN_H_
+
+FILE * pUSERSFILE = NULL;
+long int UsersfileSize = 0;
+
+
+#endif /* LIBLOGIN_H_ */

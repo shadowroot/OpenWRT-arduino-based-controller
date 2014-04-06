@@ -1,0 +1,63 @@
+/*
+ * utils.h
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <error.h>
+#include <err.h>
+
+
+#ifndef UTILS_H_
+#define UTILS_H_
+
+
+/**
+ * Log definitions
+ */
+#define LOG_PATH "/tmp/.webcontrol.log"
+#define SESSION_PATH "/tmp/.webcontrol.session"
+#define PASSWD_PATH "/root/.webconfig"
+
+/**
+ * Log levels
+ */
+#define LOG_E 0
+#define LOG_W 1
+#define LOG_I 2
+
+
+#define TRUE 1
+#define FALSE 0
+
+
+/**
+ * FILES
+ *
+ */
+FILE* LOG_FILE = NULL;
+FILE* SESSION_FILE = NULL;
+
+/**
+ * Referencing strings and length and referencing.
+ */
+typedef struct{
+	int length;
+	int references;
+	char * string;
+} STRING;
+
+/**
+ * Log message buffer 99 chars long.
+ */
+char log_msg[100];
+
+
+
+void error_message(const char * msg);
+
+#endif /* UTILS_H_ */

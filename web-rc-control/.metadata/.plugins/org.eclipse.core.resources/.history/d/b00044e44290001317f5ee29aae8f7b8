@@ -1,0 +1,19 @@
+/*
+ * json.h
+ *
+ *  Created on: 7. 2. 2014
+ *      Author: jonny
+ */
+
+#include <stdio.h>
+
+#ifndef JSON_H_
+#define JSON_H_
+
+
+struct TOBJECT{
+
+};
+
+
+#endif /* JSON_H_ */

@@ -1,0 +1,214 @@
+/*
+ * webcontrol.c
+ *
+ *
+ *Web Controller
+
+- RC Car controller and others
+-
+
+ *  Created on: 4. 2. 2014
+ *      Author: jonny
+ */
+
+#include "webcontrol.h"
+
+struct TRequest{
+	char * context;
+	char * param;
+	char * value;
+};
+
+
+
+// TODO login parse
+
+/**
+ *	Login function
+ * @param value
+ * @return Error code or 0
+ */
+int login(char * value){
+
+
+	return 0;
+}
+
+int isLogged(char * cookie,int * SESSIONID){
+	char * param, * value;
+	while(!parseCOOKIE(&cookie,&param,&value)){
+		if(strcmp(param,"SESSION")){
+			*SESSIONID = atoi(value);
+		}
+	}
+	if(*SESSIONID < 0){
+		if(login()){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int parseCOOKIE(char ** buffer_in,char ** param,char ** value){
+	char * token = NULL;
+		token = strtok(*buffer_in,";");
+		if(!token){
+			return -1;
+		}
+		*value = token;
+		*param = strtok(*value,"=");
+	return 0;
+}
+
+int char * parseJSON(char * str){
+
+	return 0;
+}
+
+
+int parseREQUEST(char ** buffer_in,char ** param,char ** value){
+	char * token = NULL;
+		token = strtok(*buffer_in,"&");
+		if(!token){
+			return -1;
+		}
+		*value = token;
+		*param = strtok(*value,"=");
+
+	return 0;
+}
+
+
+//
+//int parseGET(char * buffer_in){
+//	char * value, * param;
+//	while(!parseREQUEST(&buffer_in,&param,&value)){
+//
+//	}
+//	return 0;
+//}
+
+int parsePOST(char * buffer_in){
+	char * value, * param;
+	while(!parseREQUEST(&buffer_in,&param,&value)){
+
+	}
+	return 0;
+}
+
+int init_serial(){
+	int pid = 0;
+	pid = fork();
+	/*
+	 * For serial communication waiting for responses
+	 */
+	if(!pid){
+		SERIAL = open("/dev/ttyS",O_RDWR | O_NONBLOCK);
+	}
+	return 0;
+}
+
+int serial_read(char * buffer,int size){
+
+	return 0;
+}
+
+int serial_write(char * buffer){
+
+	return 0;
+}
+
+void sendHeader(char * cookie){
+	fputs("HTTP/1.0 200 OK\r\n",stdin);
+	fputs("Content-type: text/plain\r\n\r\n");
+	fputs("Set-Cookie:",stdin);
+	fputs(cookie,stdin);
+	fputs("\r\n",stdin);
+}
+
+
+int writeStream(char * buffer_out){
+	fputs(buffer_out,stdin);
+	return 0;
+}
+
+
+/**
+ * Logging
+ * @param level
+ * @param msg
+ */
+void log(int level,const char * msg){
+	time_t now = time(NULL);
+	char * out = " [ ";
+	strcat(out,ctime(&now));
+	strcat(out," ] \t");
+	strcat(out,msg);
+	strcat(out,"\r\n");
+	fputs(out,LOG_FILE);
+}
+
+/**
+ * Entry point to application
+ *
+ * @return
+ */
+
+int main(void){
+
+
+	/*
+	 *
+	 */
+	char * action = NULL;
+	char * data_in = NULL;
+	char * cookie = NULL;
+	int data_lenght_in = 0;
+	char * w_content_data_length = NULL;
+	char * buffer_in = NULL;
+	char * buffer_out = NULL;
+	char * token = NULL;
+	int SESSIONID = -1;
+
+	struct TRequest * GETrequests = NULL;
+	struct TRequest * POSTrequests = NULL;
+
+
+	if(!LOG_FILE){
+		LOG_FILE = fopen(LOG_PATH,"a+");
+		SESSION_PATH = fopen(SESION_FILE,"a+");
+	}
+
+//parse /etc/passwd data for accounts and shadow for passwords
+	buffer_out = (char*) malloc(PACKET_SIZE);
+
+
+	//	get method string
+	action = getenv("QUERY_STRING");
+/*
+ * There come sonly context of commands inside requests
+ * Example:
+ * ?login
+ * ?command
+ * ?action
+ *
+ */
+
+	cookie = getenv("HTTP_COOKIE");
+	w_content_data_length = getenv("CONTENT_LENGTH");
+	data_lenght_in = atoi(w_content_data_length);
+
+
+
+	buffer_in = (char*) malloc(data_lenght_in);
+	fgets(buffer_in,data_lenght_in,stdin);
+
+	sendHeader(cookie);
+
+
+	free(buffer_in);
+	free(buffer_out);
+	return 0;
+}
+
+

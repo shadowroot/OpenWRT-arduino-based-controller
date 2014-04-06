@@ -1,0 +1,28 @@
+/*
+ * liblogin.c
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+
+void __userFile(const char * filename){
+	USERSFILE = fopen(filename,"a");
+
+}
+
+
+void __addUser(const char * username, const char * password){
+
+}
+/**
+ * Deleting users via username
+ * @param username
+ */
+void __delUser(const char * username){
+
+}
+
+int __login(const char * username,const char * password){
+
+}

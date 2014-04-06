@@ -1,0 +1,46 @@
+/*
+ * webcontrol.h
+ *
+ *  Created on: 5. 2. 2014
+ *      Author: jonny
+ */
+
+#include <stdio.h>
+#include <time.h>
+#include <termios.h>
+
+#ifndef WEBCONTROL_H_
+#define WEBCONTROL_H_
+
+/**
+ * Log definitions
+ */
+#define LOG_PATH "/tmp/.webcontrol.log"
+#define SESSION_PATH "/tmp/.webcontrol.session"
+#define PACKET_SIZE 1024
+
+/**
+ * Log levels
+ */
+#define LOG_E 0
+#define LOG_W 1
+#define LOG_I 2
+
+/**
+ * FILES
+ *
+ */
+static FILE* LOG_FILE = NULL;
+static FILE* SESION_FILE = NULL;
+static FILE* SERIAL = NULL;
+
+/**
+ * GLOBAL VARIABLES
+ * log_msg buffer for message log
+ * SERIAL_BUFFER buffer for serial communication
+ */
+
+char log_msg[100];
+char SERIAL_BUFFER[9600];
+
+#endif /* WEBCONTROL_H_ */

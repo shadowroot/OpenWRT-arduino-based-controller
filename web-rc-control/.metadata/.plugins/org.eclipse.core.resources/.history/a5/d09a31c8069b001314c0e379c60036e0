@@ -1,0 +1,28 @@
+/*
+ * libserial.h
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+#include <stdio.h>
+#include <time.h>
+#include <termios.h>
+#include <unistd.h>
+#include "utils.h"
+
+#ifndef LIBSERIAL_H_
+#define LIBSERIAL_H_
+
+
+#define SERIAL_STATUS_READING 1
+#define SERIAL_STATUS_WRITING 2
+#define SERIAL_STATUS_ERROR -1
+#define SERIAL_STATUS_READY 0
+
+const static int SERIAL_BUFFER_SIZE = 9600;
+char SERIAL_BUFFER[SERIAL_BUFFER_SIZE];
+static int SERIAL_BUFFER_READ = 0;
+static int SERIAL_STATUS = SERIAL_STATUS_ERROR;
+
+#endif /* LIBSERIAL_H_ */

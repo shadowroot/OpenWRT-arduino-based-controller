@@ -1,0 +1,22 @@
+/*
+ * liblogin.c
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+
+void __userFile(const char * filename){
+	USERSFILE = fopen(filename,"a");
+}
+
+
+void __addUser(const char * username, const char * password){
+
+}
+
+void __delUser(const char * username){
+
+}
+
+void __

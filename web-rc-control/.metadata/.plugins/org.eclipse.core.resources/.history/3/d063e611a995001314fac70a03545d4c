@@ -1,0 +1,292 @@
+/*
+ * webcontrol.c
+ *
+ *
+ *Web Controller
+
+- RC Car controller and others
+-
+
+ *  Created on: 4. 2. 2014
+ *      Author: jonny
+ */
+
+#include "webcontrol.h"
+
+struct TRequest{
+	char * context;
+	char * param;
+	char * value;
+};
+
+
+// TODO login parse
+
+/**
+ *	Login function
+ * @param value
+ * @return Error code or 0
+ */
+int login(char * value){
+
+
+	return 0;
+}
+/**
+ *
+ * @param cookie
+ * @param SESSIONID
+ * @return
+ */
+int isLogged(char * cookie,int * SESSIONID){
+	char * param, * value;
+	while(!parseCOOKIE(&cookie,&param,&value)){
+		if(strcmp(param,"SESSION")){
+			*SESSIONID = atoi(value);
+		}
+	}
+	if(*SESSIONID < 0){
+		if(login()){
+			return 1;
+		}
+	}
+	return 0;
+}
+
+int parseCOOKIE(char ** buffer_in,char ** param,char ** value){
+	char * token = NULL;
+		token = strtok(*buffer_in,";");
+		if(!token){
+			return -1;
+		}
+		*value = token;
+		*param = strtok(*value,"=");
+	return 0;
+}
+
+
+
+
+int parseREQUEST(char ** buffer_in,char ** param,char ** value){
+	char * token = NULL;
+		token = strtok(*buffer_in,"&");
+		if(!token){
+			return -1;
+		}
+		*value = token;
+		*param = strtok(*value,"=");
+
+	return 0;
+}
+
+
+//
+//int parseGET(char * buffer_in){
+//	char * value, * param;
+//	while(!parseREQUEST(&buffer_in,&param,&value)){
+//
+//	}
+//	return 0;
+//}
+
+int parsePOST(char * buffer_in){
+	char * value, * param;
+	while(!parseREQUEST(&buffer_in,&param,&value)){
+
+	}
+	return 0;
+}
+/**
+ *
+ * @return
+ */
+int serial_setup(int fd,int speed,int parity){
+
+	 struct termios tty;
+	        memset (&tty, 0, sizeof tty);
+	        if (tcgetattr (fd, &tty) != 0)
+	        {
+	                error_message ("error %d from tcgetattr", errno);
+	                return -1;
+	        }
+
+	        cfsetospeed (&tty, speed);
+	        cfsetispeed (&tty, speed);
+
+	        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
+	        // disable IGNBRK for mismatched speed tests; otherwise receive break
+	        // as \000 chars
+	        tty.c_iflag &= ~IGNBRK;         // ignore break signal
+	        tty.c_lflag = 0;                // no signaling chars, no echo,
+	                                        // no canonical processing
+	        tty.c_oflag = 0;                // no remapping, no delays
+	        tty.c_cc[VMIN]  = 0;            // read doesn't block
+	        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+
+	        tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
+
+	        tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls,
+	                                        // enable reading
+	        tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
+	        tty.c_cflag |= parity;
+	        tty.c_cflag &= ~CSTOPB;
+	        tty.c_cflag &= ~CRTSCTS;
+
+	        if (tcsetattr (fd, TCSANOW, &tty) != 0)
+	        {
+	                error_message ("error %d from tcsetattr", errno);
+	                return -1;
+	        }
+	        return 0;
+	}
+
+void
+set_blocking (int fd, int should_block)
+{
+		struct termios tty;
+		memset (&tty, 0, sizeof tty);
+		if (tcgetattr (fd, &tty) != 0)
+		{
+				error_message ("error %d from tggetattr", errno);
+				return;
+		}
+
+		tty.c_cc[VMIN]  = should_block ? 1 : 0;
+		tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+
+		if (tcsetattr (fd, TCSANOW, &tty) != 0)
+				error_message ("error %d setting term attributes", errno);
+}
+
+
+
+int init_serial(){
+	int pid = 0;
+	pid = fork();
+	/*
+	 * For serial communication waiting for responses
+	 */
+	if(!pid){
+		SERIAL = open("/dev/ttyS",O_RDWR | O_NOCTTY | O_SYNC);
+		if(SERIAL < 0){
+
+		}
+		serial_setup(SERIAL,B9600,0);
+		set_blocking(SERIAL,0);
+
+
+
+	}
+	return 0;
+}
+
+int serial_read(char * buffer,int size){
+	read(SERIAL,SERIAL_BUFFER,sizeof(SERIAL_BUFFER));
+	/*
+	 * process incomming data
+	 */
+	return 0;
+}
+
+int serial_write(char * buffer){
+	write(SERIAL,SERIAL_BUFFER,sizeof(SERIAL_BUFFER));
+	/*
+	 * send data over
+	 */
+	return 0;
+}
+
+void sendHeader(char * cookie){
+	fputs("HTTP/1.0 200 OK\r\n",stdout);
+	fputs("Content-type: text/plain\r\n\r\n",stdout);
+	fputs("Set-Cookie:",stdout);
+	fputs(cookie,stdout);
+	fputs("\r\n",stdout);
+}
+
+
+int writeStream(char * buffer_out){
+	fputs(buffer_out,stdin);
+	return 0;
+}
+
+
+/**
+ * Logging
+ * @param level
+ * @param msg
+ */
+void log(int level,const char * msg){
+	time_t now = time(NULL);
+	char * out = " [ ";
+	strcat(out,ctime(&now));
+	strcat(out," ] \t");
+	strcat(out,msg);
+	strcat(out,"\r\n");
+	fputs(out,LOG_FILE);
+}
+
+/**
+ * Entry point to application
+ *
+ * @return
+ */
+
+int main(int argc,char * argv[]){
+
+
+	/*
+	 *
+	 */
+	char * action = NULL;
+	char * data_in = NULL;
+	char * cookie = NULL;
+	int data_lenght_in = 0;
+	char * w_content_data_length = NULL;
+	char * buffer_in = NULL;
+	char * buffer_out = NULL;
+	char * token = NULL;
+	int SESSIONID = -1;
+
+	struct TRequest * GETrequests = NULL;
+	struct TRequest * POSTrequests = NULL;
+
+
+	if(!LOG_FILE){
+		LOG_FILE = fopen(LOG_PATH,"a+");
+		SESSION_PATH = fopen(SESION_FILE,"a+");
+	}
+
+//parse /etc/passwd data for accounts and shadow for passwords
+	buffer_out = (char*) malloc(PACKET_SIZE);
+
+
+	//	get method string
+	action = getenv("QUERY_STRING");
+/*
+ * There come sonly context of commands inside requests
+ * Example:
+ * ?login
+ * ?command
+ * ?action
+ *
+ */
+
+	cookie = getenv("HTTP_COOKIE");
+	w_content_data_length = getenv("CONTENT_LENGTH");
+	data_lenght_in = atoi(w_content_data_length);
+
+
+
+	buffer_in = (char*) malloc(data_lenght_in);
+	fgets(buffer_in,data_lenght_in,stdin);
+
+	sendHeader(cookie);
+
+
+	free(buffer_in);
+	free(buffer_out);
+	return 0;
+}
+
+

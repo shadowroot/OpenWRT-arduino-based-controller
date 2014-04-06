@@ -1,0 +1,59 @@
+00:59:22 **** Incremental Build of configuration Debug for project controller ****
+make all 
+Building file: ../webcontrol.c
+Invoking: Cross GCC Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"webcontrol.d" -MT"webcontrol.d" -o "webcontrol.o" "../webcontrol.c"
+In file included from ../webcontrol.c:14:0:
+../webcontrol.h:21:0: warning: "NULL" redefined [enabled by default]
+In file included from /usr/include/unistd.h:227:0,
+                 from ../libserial.h:11,
+                 from ../webcontrol.h:11,
+                 from ../webcontrol.c:14:
+/usr/lib/gcc/x86_64-linux-gnu/4.7/include/stddef.h:403:0: note: this is the location of the previous definition
+../webcontrol.c: In function ‘main’:
+../webcontrol.c:100:10: warning: assignment makes integer from pointer without a cast [enabled by default]
+../webcontrol.c:103:12: warning: assignment makes integer from pointer without a cast [enabled by default]
+Finished building: ../webcontrol.c
+../webcontrol.c:114:4: warning: implicit declaration of function ‘__addUser’ [-Wimplicit-function-declaration]
+ 
+../webcontrol.c:120:4: warning: implicit declaration of function ‘__delUser’ [-Wimplicit-function-declaration]
+Building target: controller
+../webcontrol.c:88:20: warning: unused variable ‘POSTrequests’ [-Wunused-variable]
+Invoking: Cross GCC Linker
+../webcontrol.c:87:20: warning: unused variable ‘GETrequests’ [-Wunused-variable]
+gcc  -o "controller"  ./gpio_control.o ./libjson.o ./liblogin.o ./libserial.o ./utils.o ./webcontrol.o   -lcrypt
+../webcontrol.c:80:6: warning: unused variable ‘SESSIONID’ [-Wunused-variable]
+../webcontrol.c:79:9: warning: unused variable ‘token’ [-Wunused-variable]
+../webcontrol.c:73:9: warning: unused variable ‘data_in’ [-Wunused-variable]
+../webcontrol.c:72:9: warning: variable ‘action’ set but not used [-Wunused-but-set-variable]
+Finished building target: controller
+In file included from ../webcontrol.h:9:0,
+ 
+                 from ../webcontrol.c:14:
+../webcontrol.c: At top level:
+../utils.h:46:16: warning: ‘SESSIONS’ defined but not used [-Wunused-variable]
+../utils.h:47:12: warning: ‘SESSION_SIZE’ defined but not used [-Wunused-variable]
+../utils.h:48:12: warning: ‘SESSION_CURRENT_SIZE’ defined but not used [-Wunused-variable]
+../utils.h:62:13: warning: ‘log_msg’ defined but not used [-Wunused-variable]
+In file included from ../webcontrol.h:10:0,
+                 from ../webcontrol.c:14:
+../liblogin.h:24:15: warning: ‘pUSERSFILE’ defined but not used [-Wunused-variable]
+../liblogin.h:25:17: warning: ‘lUsersfileSize’ defined but not used [-Wunused-variable]
+../liblogin.h:26:15: warning: ‘szUsersFileStream’ defined but not used [-Wunused-variable]
+../liblogin.h:27:12: warning: ‘iUsersSize’ defined but not used [-Wunused-variable]
+../liblogin.h:28:12: warning: ‘iUsersCurrentSize’ defined but not used [-Wunused-variable]
+../liblogin.h:29:29: warning: ‘users’ defined but not used [-Wunused-variable]
+In file included from ../webcontrol.h:11:0,
+                 from ../webcontrol.c:14:
+../libserial.h:24:13: warning: ‘SERIAL_BUFFER_RECEIVED’ defined but not used [-Wunused-variable]
+../libserial.h:25:13: warning: ‘SERIAL_BUFFER_READY_TO_WRITE’ defined but not used [-Wunused-variable]
+../libserial.h:26:13: warning: ‘SERIAL_BUFFER_READY_TO_RECEIVE’ defined but not used [-Wunused-variable]
+../libserial.h:28:12: warning: ‘SERIAL’ defined but not used [-Wunused-variable]
+../libserial.h:31:12: warning: ‘SERIAL_CURRENT_BUFFER_SIZE’ defined but not used [-Wunused-variable]
+../libserial.h:32:15: warning: ‘SERIAL_BUFFER’ defined but not used [-Wunused-variable]
+../libserial.h:33:12: warning: ‘SERIAL_BUFFER_READ’ defined but not used [-Wunused-variable]
+../libserial.h:34:12: warning: ‘SERIAL_STATUS’ defined but not used [-Wunused-variable]
+../libserial.h:35:12: warning: ‘LIB_SERIAL_STATUS’ defined but not used [-Wunused-variable]
+00:59:27 **** Incremental Build of configuration Debug for project controller ****
+make all 
+make: Nothing to be done for `all'.

@@ -1,0 +1,29 @@
+/*
+ * utils.h
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <error.h>
+#include <err.h>
+
+
+#ifndef UTILS_H_
+#define UTILS_H_
+
+
+/**
+ * Referencing strings and length and referencing.
+ */
+typedef struct{
+	char * string;
+	int length;
+	int references;
+}STRING;
+
+
+#endif /* UTILS_H_ */

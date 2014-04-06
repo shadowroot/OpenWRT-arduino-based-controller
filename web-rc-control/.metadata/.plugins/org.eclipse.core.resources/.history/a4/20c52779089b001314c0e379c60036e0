@@ -1,0 +1,279 @@
+/*
+ * libserial.c
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+#include "libserial.h"
+
+/**
+ * Initial setup for serial tty.
+ * @param fd
+ * @param speed
+ * @param parity
+ * @return
+ */
+int serial_setup(int fd,int speed,int parity){
+
+	 struct termios tty;
+	memset (&tty, 0, sizeof tty);
+	if (tcgetattr (fd, &tty) != 0)
+	{
+			error_message ("error %d from tcgetattr");
+			return -1;
+	}
+
+	cfsetospeed (&tty, speed);
+	cfsetispeed (&tty, speed);
+
+	tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
+	// disable IGNBRK for mismatched speed tests; otherwise receive break
+	// as \000 chars
+	tty.c_iflag &= ~IGNBRK;         // ignore break signal
+	tty.c_lflag = 0;                // no signaling chars, no echo,
+									// no canonical processing
+	tty.c_oflag = 0;                // no remapping, no delays
+	tty.c_cc[VMIN]  = 0;            // read doesn't block
+	tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+
+	tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
+
+	tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls,
+									// enable reading
+	tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
+	tty.c_cflag |= parity;
+	tty.c_cflag &= ~CSTOPB;
+	tty.c_cflag &= ~CRTSCTS;
+
+	if (tcsetattr (fd, TCSANOW, &tty) != 0)
+	{
+			error_message ("error %d from tcsetattr");
+			return -1;
+	}
+	return 0;
+}
+
+void
+set_blocking (int fd, int should_block)
+{
+		struct termios tty;
+		memset (&tty, 0, sizeof tty);
+		if (tcgetattr (fd, &tty) != 0)
+		{
+				error_message ("error %d from tcgetattr");
+				return;
+		}
+
+		tty.c_cc[VMIN]  = should_block ? 1 : 0;
+		tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+
+		if (tcsetattr (fd, TCSANOW, &tty) != 0)
+				error_message ("error %d setting term attributes");
+}
+/**
+ * Find if there is a better way than pooling to get serial data.
+ * @return
+ */
+int startSerialPooling(){
+	char * buffer = NULL;
+	int size = 0;
+	if(SERIAL_STATUS == SERIAL_STATUS_ERROR){
+		return 1;
+	}
+	while(!LIB_SERIAL_STATUS){
+		if(SERIAL_BUFFER_READY_TO_RECEIVE){
+			serial_read();
+			SERIAL_BUFFER_READY_TO_RECEIVE = FALSE;
+			SERIAL_BUFFER_RECEIVED = TRUE;
+		}
+		else if(SERIAL_BUFFER_RECEIVED){
+			size = __serial_to_json(&buffer);
+			SERIAL_BUFFER_RECEIVED = FALSE;
+		}
+		else if(SERIAL_BUFFER_READY_TO_WRITE){
+			serial_write();
+		}
+	}
+
+	return 0;
+}
+
+
+void __exit(){
+	LIB_SERIAL_STATUS = 1;
+}
+
+
+/**
+ * Initialization of serial
+ * @return
+ */
+
+int init_serial(){
+	int pid = 0;
+	pid = fork();
+	/*
+	 * For serial communication waiting for responses
+	 */
+	if(!pid){
+		SERIAL = open("/dev/ttyS0",O_RDWR | O_NOCTTY | O_SYNC);
+		if(SERIAL < 0){
+			error_message ("error %d init tern failed");
+		}
+		serial_setup(SERIAL,B9600,0);
+		set_blocking(SERIAL,0);
+		SERIAL_STATUS = SERIAL_STATUS_READY;
+		if(startSerialPooling()){
+			error_message("error %d serial pooling failed");
+		}
+
+	}
+	return 0;
+}
+
+/**
+ *
+ * @param data
+ * @return
+ */
+int __json_parse_serial(const char * data){
+	int i=0,objects=0;
+	char inside_string = FALSE;
+
+	for(;data[i];i++){
+		if(data[i] == '\"'){
+			inside_string ? FALSE : TRUE;
+		}
+		if(!inside_string){
+			if(data[i] == '{'){
+				objects++;
+			}
+			else if(data[i] == '}'){
+				objects--;
+			}
+			else if(data[i] == ':'){
+				SERIAL_BUFFER[SERIAL_BUFFER_SIZE++] = ' ';
+			}
+			else if(data[i] == ','){
+				SERIAL_BUFFER[SERIAL_BUFFER_SIZE++] = '\n';
+			}
+		}
+		else{
+			SERIAL_BUFFER[SERIAL_BUFFER_SIZE++] = data[i];
+		}
+	}
+
+	if(objects){
+		/*
+		 * Baddly parsed JSON
+		 */
+		return 1;
+	}
+	return 0;
+}
+/**
+ * Resizing json string
+ * @param str
+ * @param oldsize
+ * @return
+ */
+int __resize_json(char ** str,int oldsize){
+	int newsize = oldsize * 2;
+	char * tmpstr = NULL;
+	tmpstr = (char*) malloc(newsize);
+	memcpy(tmpstr,*str,oldsize);
+	free(*str);
+	*str = tmpstr;
+	return newsize;
+}
+
+
+/**
+ * Parsing SERIAL responses to json delimiter ' '
+ * Using serial buffer
+ * Example:
+ * 	MOVE OK			{"MOVE":"OK"}
+ * 	OUT_* FAIL		{"OUT_*":"FAIL"}
+ * 	IN_0 255		{"IN_0" :"255"}
+ * @return
+ */
+int __serial_to_json( char ** str ){
+	char * pstrJson = NULL;
+	int istr = 0,i = 0;
+	int istr_size = SERIAL_BUFFER_READ * 2;
+	char seeking_value = FALSE;
+	pstrJson = (char *) malloc(istr_size);
+
+	memcpy(pstrJson,"{ \"",3);
+	istr+=3;
+
+	for(i = 0 ; i < SERIAL_BUFFER_READ ; i++){
+		if(istr >= istr_size + 5){
+			istr_size = __resize_json(&pstrJson,istr_size);
+		}
+		if(SERIAL_BUFFER[i] == ' ' || SERIAL_BUFFER[i] == '\t'){
+			if(!seeking_value){
+				memcpy(&pstrJson[istr],"\" : \"",5);
+				istr+=5;
+				seeking_value = TRUE;
+			}
+			else{
+				continue;
+			}
+		}
+		else if(SERIAL_BUFFER[i] == '\n'){
+			memcpy(&pstrJson[istr],"\" , \"",5);
+		}
+		else{
+			/*
+			 * Just skipping in case \r\n
+			 */
+
+			if(SERIAL_BUFFER[i] != '\r'){
+				pstrJson[istr] = SERIAL_BUFFER[i];
+				istr++;
+			}
+		}
+	}
+	if(istr >= istr_size + 4){
+		istr_size = __resize_json(&pstrJson,istr_size);
+	}
+	memcpy(&pstrJson[istr],"\" }",4);
+
+	*str = pstrJson;
+	return istr;
+}
+
+/**
+ * Reading string
+ * @param buffer
+ * @param size
+ * @return
+ */
+int serial_read(){
+	int size = 0;
+	char * str = NULL;
+	SERIAL_BUFFER_READ = read(SERIAL,SERIAL_BUFFER,sizeof(SERIAL_BUFFER));
+	/*
+	 * process incomming data
+	 */
+	// TODO parsing read
+
+	return 0;
+}
+/**
+ * Writing string
+ * @param buffer
+ * @return
+ */
+int serial_write(){
+	// TODO parsing write
+
+	write(SERIAL,SERIAL_BUFFER,sizeof(SERIAL_BUFFER));
+	/*
+	 * send data over
+	 */
+
+	return 0;
+}

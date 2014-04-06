@@ -1,0 +1,36 @@
+/*
+ * utils.h
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <error.h>
+#include <err.h>
+
+
+#ifndef UTILS_H_
+#define UTILS_H_
+
+
+/**
+ * Log definitions
+ */
+#define LOG_PATH "/tmp/.webcontrol.log"
+#define SESSION_PATH "/tmp/.webcontrol.session"
+#define PASSWD_PATH "/root/.webconfig"
+
+/**
+ * Referencing strings and length and referencing.
+ */
+typedef struct{
+	char * string;
+	int length;
+	int references;
+}STRING;
+
+
+#endif /* UTILS_H_ */

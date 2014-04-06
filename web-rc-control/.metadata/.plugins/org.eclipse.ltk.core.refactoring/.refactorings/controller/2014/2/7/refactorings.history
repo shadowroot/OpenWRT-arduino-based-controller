@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;controller/json.c&apos; to &apos;libjson.c&apos;" description="Rename resource &apos;json.c&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="json.c" name="libjson.c" stamp="1392401900427" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;controller/json.h&apos; to &apos;libjson.h&apos;" description="Rename resource &apos;json.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="json.h" name="libjson.h" stamp="1392401910471" updateReferences="true"/>
+</session>

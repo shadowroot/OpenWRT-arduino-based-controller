@@ -1,0 +1,46 @@
+/*
+ * json.h
+ *
+ *  Created on: 7. 2. 2014
+ *      Author: jonny
+ */
+
+#include <stdio.h>
+
+#ifndef JSON_H_
+#define JSON_H_
+
+/**
+ * Describing JSON Object with tokenizer. Each token describes parama and value pair.
+ */
+struct TObject{
+	int size;
+	struct TToken* tokens;
+};
+/**
+ * Describing array of values it means
+ */
+struct TArray{
+	union TVALUE* values;
+	char type;
+	int size;
+};
+
+union TVALUE{
+	char * string;
+	int value;
+	struct TObject * object;
+	struct TArray * array;
+
+};
+/**
+ *
+ */
+struct TToken{
+	char * param;
+	char type;
+	union TVALUE value;
+	struct TToken * next;
+};
+
+#endif /* JSON_H_ */

@@ -1,0 +1,35 @@
+/*
+ * utils.c
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+
+#include "utils.h"
+/**
+ * Error message
+ * @param msg
+ * @param err
+ */
+void error_message(const char * msg){
+	fprintf(stderr,msg,errno);
+}
+
+
+int init_utils(){
+	if(!LOG_FILE){
+		LOG_FILE = fopen(LOG_PATH,"a+");
+		SESSION_FILE= fopen(SESSION_PATH,"a+");
+
+		if(!LOG_FILE){
+			error_message("Logfile cannot be created");
+			return -1;
+		}
+		if(!SESSION_FILE){
+			error_message("Session file cannot be created");
+			return -1;
+		}
+	}
+	return 0;
+}

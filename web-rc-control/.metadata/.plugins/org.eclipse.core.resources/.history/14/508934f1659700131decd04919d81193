@@ -1,0 +1,30 @@
+/*
+ * liblogin.h
+
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include "utils.h"
+
+
+#ifndef LIBLOGIN_H_
+#define LIBLOGIN_H_
+
+struct TUSERPASSW{
+	char * user;
+	char * passwd;
+	struct TUSERPASSW* next;
+};
+
+static FILE * pUSERSFILE = NULL;
+static long int lUsersfileSize = 0;
+static char * szUsersFileStream = NULL;
+static struct TUSERPASSWD users;
+
+
+#endif /* LIBLOGIN_H_ */

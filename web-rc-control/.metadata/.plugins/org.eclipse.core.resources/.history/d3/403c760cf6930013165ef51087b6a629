@@ -1,0 +1,176 @@
+/*
+ * json.c
+ *
+ *  Created on: 7. 2. 2014
+ *      Author: jonny
+ */
+#include "json.h"
+
+
+/**
+ * Loading string replacing " with \0 and returns length
+ * "SOMESTRING"
+ * \0SOMESTRING\0 returns
+ * @param str_in
+ * @return size for pos
+ */
+STRING loadString(char * str_in){
+	STRING str;
+	int size = 0;
+	char *tmp=str_in;
+	*tmp = 0;
+	for(;*tmp != '"';tmp++){
+		(size)++;
+	}
+	*tmp = 0;
+	str.string = str_in;
+	str.length = size;
+	str.references = -1;
+	return str;
+}
+
+
+/**
+ * Decoding strings to objects
+ * @param str JSONstring
+ * @param objects Objects accesible with tokenizer
+ * @return
+ */
+int decodeJSON(char * str,struct TObject ** objects){
+
+	char loading_new_token = FALSE,loading_param=FALSE,loading_value=FALSE,string_active=FALSE,* param = NULL,loading_string = FALSE;
+	struct TToken ** stack = (struct TToken **)malloc(sizeof(struct TToken *) * 10),* tmp_token = NULL,* tmp_new_token = NULL;
+	const int stack_size = 10;
+	struct TToken ** stacks[100];
+	struct TToken *** extend_stacks;
+	int pos = 0,stack_current_size = 0,loading_string_length = 0;
+	struct TObject * obj = (struct TObject *) malloc(sizeof(struct TObject *));
+	STRING * string;
+
+	obj->tokens = NULL;
+	while(str[pos]){
+		if(loading_new_token){
+			tmp_new_token = (struct TToken *)malloc(sizeof(struct TToken));
+			loading_new_token = FALSE;
+		}
+		switch(str[pos]){
+			case '{':
+				tmp_new_token->next = NULL;
+				tmp_new_token->type = TYPE_OBJECT;
+				tmp_new_token->param = NULL;
+				tmp_new_token->value = NULL;
+				if(stack_current_size < stack_size){
+					stack[stack_current_size++] = tmp_new_token;
+				}
+				else{
+
+				}
+				loading_param = TRUE;
+				loading_new_token = TRUE;
+				break;
+			case '"':
+				if(loading_param){
+					tmp_new_token->param = &str[pos+1];
+					string = loadString(&str[pos]);
+					loading_param = FALSE;
+					loading_value = TRUE;
+				}
+				break;
+			case ':':
+
+				break;
+			case '}':
+				if(str[pos+1] == ',' || str[pos+2] == ','){
+					loading_new_token = TRUE;
+				}
+				break;
+			case ',':
+				loading_new_token = TRUE;
+				break;
+			case ' ':
+				if(string_active){
+
+				}
+				break;
+			case '[':
+
+				break;
+			case ']':
+
+				break;
+				/*
+				 * Loading whatever values
+				 * string
+				 * integer
+				 * object
+				 * array
+				 *
+				 */
+			default:
+
+				break;
+				pos++;
+
+		}
+	}
+
+
+	*objects = obj;
+	return 0;
+}
+/**
+ * Encoding object to strings it means all tokens
+ * @param objects objects to encode
+ * @return JSONstring
+ */
+char * encodeJSON(struct TObject * objects){
+
+	return 0;
+}
+/**
+ * Freeing string
+ * @param string
+ */
+void free(STRING string){
+
+	if(string->references > 0){
+		string->references--;
+	}
+	else if(string->references == 0){
+		free(string->string);
+	}
+
+}
+
+/**
+ * Freeing all objects
+ * @param objects
+ */
+void free_object(struct TObject * objects){
+	struct TToken * tmp = objects->tokens;
+	while(tmp){
+		free(tmp->param);
+		switch(tmp->type){
+		case TYPE_OBJECT:
+			free_object(tmp->value->object);
+			break;
+		case TYPE_BOOL:
+			break;
+		case TYPE_STRING:
+			free(*tmp->value->string);
+			free(tmp->value->string);
+			break;
+		default:
+			break;
+		}
+		tmp = tmp->next;
+	}
+	free(objects);
+}
+
+/**
+ * Init
+ */
+void json_init(){
+
+}

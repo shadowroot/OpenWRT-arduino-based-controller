@@ -1,0 +1,43 @@
+/*
+ * liblogin.c
+ *
+ *  Created on: 15. 2. 2014
+ *      Author: jonny
+ */
+
+
+void __userFile(const char * filename){
+	USERSFILE = fopen(filename,"a");
+
+}
+
+/**
+ * Adding user - same structure as /etc/shadow
+ * username:crypted(password)\n
+ * @param username plain
+ * @param password crypted
+ */
+void __addUser(const char * username, const char * password){
+
+}
+/**
+ * Deleting users via username
+ * @param username plain
+ */
+void __delUser(const char * username){
+
+}
+
+/**
+ *
+ * @param username plain
+ * @param password plain
+ * @return 0 when will be sucessfull
+ */
+int __login(const char * username,const char * password){
+
+}
+
+const char * __getUserPassword(const char * username){
+
+}
